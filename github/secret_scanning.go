@@ -151,10 +151,10 @@ type CustomPatternScan struct {
 
 // SecretScanningResponse is the top-level struct for the secret scanning API response.
 type SecretScanningResponse struct {
-	IncrementalScans       []Scan              `json:"incremental_scans"`
-	BackfillScans          []Scan              `json:"backfill_scans"`
-	PatternUpdateScans     []Scan              `json:"pattern_update_scans"`
-	CustomPatternBackfills []CustomPatternScan `json:"custom_pattern_backfill_scans"`
+	IncrementalScans       []*Scan              `json:"incremental_scans"`
+	BackfillScans          []*Scan              `json:"backfill_scans"`
+	PatternUpdateScans     []*Scan              `json:"pattern_update_scans"`
+	CustomPatternBackfills []*CustomPatternScan `json:"custom_pattern_backfill_scans"`
 }
 
 // ListAlertsForEnterprise lists secret scanning alerts for eligible repositories in an enterprise, from newest to oldest.
@@ -338,12 +338,12 @@ func (s *SecretScanningService) PushProtectionBypasses(ctx context.Context, owne
 	if err != nil {
 		return nil, nil, err
 	}
-	var ReponsePushProtectionBypass *PushProtectionBypass
-	resp, err := s.client.Do(ctx, req, &ReponsePushProtectionBypass)
+	var reponsePushProtectionBypass *PushProtectionBypass
+	resp, err := s.client.Do(ctx, req, &reponsePushProtectionBypass)
 	if err != nil {
 		return nil, nil, err
 	}
-	return ReponsePushProtectionBypass, resp, nil
+	return reponsePushProtectionBypass, resp, nil
 }
 
 // ScanHistory fetches the secret scanning history for a given repository.
@@ -362,11 +362,11 @@ func (s *SecretScanningService) ScanHistory(ctx context.Context, owner, repo str
 		return nil, nil, err
 	}
 
-	var SecretScanningHistory *SecretScanningResponse
-	resp, err := s.client.Do(ctx, req, &SecretScanningHistory)
+	var secretScanningHistory *SecretScanningResponse
+	resp, err := s.client.Do(ctx, req, &secretScanningHistory)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return SecretScanningHistory, resp, nil
+	return secretScanningHistory, resp, nil
 }

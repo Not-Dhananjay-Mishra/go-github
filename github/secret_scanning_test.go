@@ -705,12 +705,12 @@ func TestSecretScanningService_ScanHistory(t *testing.T) {
 	startAt2, _ := time.Parse(time.RFC3339, "2025-07-29T09:00:00Z")
 
 	want := &SecretScanningResponse{
-		IncrementalScans: []Scan{
+		IncrementalScans: []*Scan{
 			{Type: "incremental", Status: "success", CompletedAt: &completeAt1, StartedAt: &startAt1},
 		},
-		BackfillScans:      []Scan{},
-		PatternUpdateScans: []Scan{},
-		CustomPatternBackfills: []CustomPatternScan{
+		BackfillScans:      []*Scan{},
+		PatternUpdateScans: []*Scan{},
+		CustomPatternBackfills: []*CustomPatternScan{
 			{
 				Scan:         Scan{Type: "custom_backfill", Status: "in_progress", CompletedAt: nil, StartedAt: &startAt2},
 				PatternSlug:  "my-custom-pattern",
