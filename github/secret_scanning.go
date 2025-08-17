@@ -328,7 +328,7 @@ func (s *SecretScanningService) ListLocationsForAlert(ctx context.Context, owner
 // To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with
 // the repo scope or security_events scope.
 //
-// GitHub API docs: https://docs.github.com/en/rest/secret-scanning/secret-scanning?apiVersion=2022-11-28#create-a-push-protection-bypass
+// GitHub API docs: https://docs.github.com/en/rest/secret-scanning/secret-scanning#create-a-push-protection-bypass
 //
 //meta:operation POST /repos/{owner}/{repo}/secret-scanning/push-protection-bypasses
 func (s *SecretScanningService) PushProtectionBypasses(ctx context.Context, owner, repo string, opts *CreatePushProtectionBypass) (*PushProtectionBypass, *Response, error) {
@@ -351,7 +351,7 @@ func (s *SecretScanningService) PushProtectionBypasses(ctx context.Context, owne
 // To use this endpoint, you must be an administrator for the repository or organization, and you must use an access token with
 // the repo scope or security_events scope and gitHub advanced security or secret scanning must be enabled.
 //
-// GitHub API docs: https://docs.github.com/en/rest/secret-scanning/secret-scanning?apiVersion=2022-11-28#get-secret-scanning-scan-history-for-a-repository
+// GitHub API docs: https://docs.github.com/en/rest/secret-scanning/secret-scanning#get-secret-scanning-scan-history-for-a-repository
 //
 //meta:operation GET /repos/{owner}/{repo}/secret-scanning/scan-history
 func (s *SecretScanningService) ScanHistory(ctx context.Context, owner, repo string) (*SecretScanningResponse, *Response, error) {
