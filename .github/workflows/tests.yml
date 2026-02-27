@@ -25,29 +25,68 @@ jobs:
     defaults:
       run:
         shell: bash
+
     strategy:
       matrix:
-        go-version: [stable, oldstable] # test with N and the .0 release of N-1
+        # test both Go 1.26 and previous stable to check regression
+        go-version: [1.25.x, 1.26.x]
         platform: [ubuntu-latest]
         include:
-          # include windows, but only with the latest Go version, since there
-          # is very little in the library that is platform specific
-          - go-version: stable
+          - go-version: 1.26.x
             platform: windows-latest
-
-          # only update test coverage stats with the most recent go version on linux
-          - go-version: stable
+          - go-version: 1.26.x
             platform: ubuntu-latest
             update-coverage: true
+
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6.3.0
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
           cache-dependency-path: "**/go.sum"
 
+      # =========================
+      # DEBUG ENVIRONMENT SECTION
+      # =========================
+      - name: Debug Go and GCC environment
+        run: |
+          echo "=============================="
+          echo "GO VERSION"
+          echo "=============================="
+          go version
+
+          echo "=============================="
+          echo "GO ENV"
+          echo "=============================="
+          go env
+
+          echo "=============================="
+          echo "WHICH GCC"
+          echo "=============================="
+          which gcc || true
+          where gcc || true
+
+          echo "=============================="
+          echo "GCC VERSION"
+          echo "=============================="
+          gcc --version || true
+
+          echo "=============================="
+          echo "GCC LIBSYNC CHECK"
+          echo "=============================="
+          gcc --print-file-name libsynchronization.a || true
+
+          echo "=============================="
+          echo "PATH"
+          echo "=============================="
+          echo $PATH
+
+      # =========================
+      # RUN TESTS
+      # =========================
       - name: Run go test
         run: |
           if [ -n "${{ matrix.update-coverage }}" ]; then
@@ -57,11 +96,10 @@ jobs:
           script/test.sh -race -covermode atomic ./...
 
       - name: Ensure integration tests build
-        # don't actually run tests since they hit live GitHub API
         run: go test -v -tags=integration -run=^$ ./test/integration
 
       - name: Upload coverage to Codecov
         if: ${{ matrix.update-coverage }}
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        uses: codecov/codecov-action@v4
         with:
           use_oidc: true
