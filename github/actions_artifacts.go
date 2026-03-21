@@ -85,7 +85,7 @@ type ArtifactPeriodOpt struct {
 //
 //meta:operation GET /repos/{owner}/{repo}/actions/artifacts
 func (s *ActionsService) ListArtifacts(ctx context.Context, owner, repo string, opts *ListArtifactsOptions) (*ArtifactList, *Response, error) {
-	u := fmt.Sprintf("repos/%v/%v/actions/artifacts", owner, repo)
+	u := fmt.Sprintf("repos/%v/%s/actions/artifacts", owner, repo)
 	u, err := addOptions(u, opts)
 	if err != nil {
 		return nil, nil, err
@@ -111,7 +111,7 @@ func (s *ActionsService) ListArtifacts(ctx context.Context, owner, repo string, 
 //
 //meta:operation GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts
 func (s *ActionsService) ListWorkflowRunArtifacts(ctx context.Context, owner, repo string, runID int64, opts *ListOptions) (*ArtifactList, *Response, error) {
-	u := fmt.Sprintf("repos/%v/%v/actions/runs/%v/artifacts", owner, repo, runID)
+	u := fmt.Sprintf("repos/%v/%s/actions/runs/%v/artifacts", owner, repo, runID)
 	u, err := addOptions(u, opts)
 	if err != nil {
 		return nil, nil, err
@@ -137,7 +137,7 @@ func (s *ActionsService) ListWorkflowRunArtifacts(ctx context.Context, owner, re
 //
 //meta:operation GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}
 func (s *ActionsService) GetArtifact(ctx context.Context, owner, repo string, artifactID int64) (*Artifact, *Response, error) {
-	u := fmt.Sprintf("repos/%v/%v/actions/artifacts/%v", owner, repo, artifactID)
+	u := fmt.Sprintf("repos/%v/%s/actions/artifacts/%v", owner, repo, artifactID)
 
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
