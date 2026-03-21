@@ -177,7 +177,7 @@ func main() {
 	if err != nil {
 		fmt.Println("Error creating application token source:", err)
 		return
-	 }
+	}
 
 	installationTokenSource := githubauth.NewInstallationTokenSource(1113, appTokenSource)
 
