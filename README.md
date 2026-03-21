@@ -142,7 +142,7 @@ func main() {
 	// itr, err := ghinstallation.NewAppsTransportKeyFromFile(http.DefaultTransport, 1, "2016-10-19.private-key.pem")
 
 	if err != nil {
-		// Handle error.
+		// error.
 	}
 
 	// Use installation transport with client.
