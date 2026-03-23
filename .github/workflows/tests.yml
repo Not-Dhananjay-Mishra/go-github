@@ -47,6 +47,11 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
           cache-dependency-path: "**/go.sum"
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: ~/.cache/go-build
+          key: ${{ runner.os }}-gobuild-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-gobuild-
 
       - name: Run go test
         run: |
