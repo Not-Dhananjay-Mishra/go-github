@@ -4,6 +4,8 @@
 #/
 #/ When UPDATE_GOLDEN is set, all directories named "golden" are removed before running tests.
 
+set -u
+
 CDPATH="" cd -- "$(dirname -- "$0")/.."
 
 if [ "$#" = "0" ]; then
