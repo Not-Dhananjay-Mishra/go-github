@@ -4,8 +4,6 @@
 #/
 #/ When UPDATE_GOLDEN is set, all directories named "golden" are removed before running tests.
 
-set -u
-
 CDPATH="" cd -- "$(dirname -- "$0")/.."
 
 if [ "$#" = "0" ]; then
@@ -26,12 +24,14 @@ for dir in $MOD_DIRS; do
     cd "$dir"
     go test "$@"
   ) &
-  PIDS="$PIDS $!"
+  PIDS="$PIDS $!:$dir"
 done
 
 FAILED=""
-for pid in $PIDS; do
-  wait "$pid" || FAILED=1
+for entry in $PIDS; do
+  pid="${entry%%:*}"
+  dir="${entry##*:}"
+  wait "$pid" || { echo "FAILED: $dir"; FAILED=1; }
 done
 
 [ -n "$FAILED" ] && exit 1
