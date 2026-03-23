@@ -4,8 +4,6 @@
 #/
 #/ When UPDATE_GOLDEN is set, all directories named "golden" are removed before running tests.
 
-set -e
-
 CDPATH="" cd -- "$(dirname -- "$0")/.."
 
 if [ "$#" = "0" ]; then
@@ -18,15 +16,20 @@ fi
 
 MOD_DIRS="$(git ls-files '*go.mod' | xargs dirname | sort)"
 
+PIDS=""
 for dir in $MOD_DIRS; do
   [ "$dir" = "example/newreposecretwithlibsodium" ] && continue
   echo "testing $dir"
   (
     cd "$dir"
     go test "$@"
-  ) || FAILED=1
+  ) &
+  PIDS="$PIDS $!"
 done
 
-if [ -n "$FAILED" ]; then
-  exit 1
-fi
+FAILED=""
+for pid in $PIDS; do
+  wait "$pid" || FAILED=1
+done
+
+[ -n "$FAILED" ] && exit 1
