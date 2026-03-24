@@ -37,6 +37,7 @@ const (
 
 var (
 	verbose = flag.Bool("v", false, "Print verbose log messages")
+	check   = flag.Bool("check", false, "check whether generated files are up to date")
 
 	// skipStructMethods lists "struct.method" combos to skip.
 	skipStructMethods = map[string]bool{}
@@ -82,6 +83,10 @@ var (
 
 	sourceTmpl = template.Must(template.New("source").Funcs(funcMap).Parse(source))
 )
+
+func isCheck() bool {
+	return *check || os.Getenv("CHECK") == "1"
+}
 
 func main() {
 	flag.Parse()
@@ -353,17 +358,27 @@ func (t *templateData) dump() error {
 		return err
 	}
 
-	logf("Writing %v...", t.filename)
-	if err := os.Chmod(t.filename, 0o644); err != nil {
-		return fmt.Errorf("os.Chmod(%q, 0644): %v", t.filename, err)
+	if isCheck() {
+		logf("Checking %v...", t.filename)
+		old, err := os.ReadFile(t.filename)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return fmt.Errorf("Missing file: %v\n", t.filename)
+			} else {
+				return err
+			}
+		}
+
+		if !bytes.Equal(old, clean) {
+			return fmt.Errorf("Generated files are out of date. Please run go generate ./... and commit the results")
+		}
+		return nil
 	}
+
+	logf("Writing %v...", t.filename)
 
 	if err := os.WriteFile(t.filename, clean, 0o444); err != nil {
 		return err
-	}
-
-	if err := os.Chmod(t.filename, 0o444); err != nil {
-		return fmt.Errorf("os.Chmod(%q, 0444): %v", t.filename, err)
 	}
 
 	return nil

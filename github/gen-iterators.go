@@ -35,6 +35,7 @@ const (
 
 var (
 	verbose = flag.Bool("v", false, "Print verbose log messages")
+	check   = flag.Bool("check", false, "check whether generated files are up to date")
 
 	sourceTmpl = template.Must(template.New("source").Funcs(template.FuncMap{
 		"hasPrefix": strings.HasPrefix,
@@ -42,6 +43,10 @@ var (
 
 	testTmpl = template.Must(template.New("test").Parse(test))
 )
+
+func isCheck() bool {
+	return *check || os.Getenv("CHECK") == "1"
+}
 
 func logf(fmt string, args ...any) {
 	if *verbose {
@@ -599,8 +604,26 @@ func (t *templateData) dump() error {
 		if err != nil {
 			return fmt.Errorf("format.Source: %v\n%s", err, buf.String())
 		}
+		if isCheck() {
+			logf("Checking %v...", filename)
+			old, err := os.ReadFile(filename)
+			if err != nil {
+				if os.IsNotExist(err) {
+					return fmt.Errorf("Missing file: %v\n", t.filename)
+				} else {
+					return err
+				}
+			}
+
+			if !bytes.Equal(old, clean) {
+				return fmt.Errorf("Generated files are out of date. Please run go generate ./... and commit the results")
+			}
+			return nil
+		}
+
 		logf("Writing %v...", filename)
-		return os.WriteFile(filename, clean, 0o644)
+		err = os.WriteFile(filename, clean, 0o644)
+		return err
 	}
 
 	if err := processTemplate(sourceTmpl, t.filename); err != nil {
