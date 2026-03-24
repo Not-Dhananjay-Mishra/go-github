@@ -376,9 +376,16 @@ func (t *templateData) dump() error {
 	}
 
 	logf("Writing %v...", t.filename)
+	if err := os.Chmod(t.filename, 0o644); err != nil {
+		return fmt.Errorf("os.Chmod(%q, 0644): %v", t.filename, err)
+	}
 
 	if err := os.WriteFile(t.filename, clean, 0o444); err != nil {
 		return err
+	}
+
+	if err := os.Chmod(t.filename, 0o444); err != nil {
+		return fmt.Errorf("os.Chmod(%q, 0444): %v", t.filename, err)
 	}
 
 	return nil
