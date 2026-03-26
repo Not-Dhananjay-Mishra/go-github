@@ -14,12 +14,14 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"go/ast"
 	"go/format"
 	"go/parser"
 	"go/token"
+	"io/fs"
 	"log"
 	"os"
 	"reflect"
@@ -35,7 +37,7 @@ const (
 
 var (
 	verbose = flag.Bool("v", false, "Print verbose log messages")
-	check   = flag.Bool("check", false, "check whether generated files are up to date")
+	check   = flag.Bool("check", false, "Check whether generated files are up to date")
 
 	sourceTmpl = template.Must(template.New("source").Funcs(template.FuncMap{
 		"hasPrefix": strings.HasPrefix,
@@ -608,11 +610,10 @@ func (t *templateData) dump() error {
 			logf("Checking %v...", filename)
 			old, err := os.ReadFile(filename)
 			if err != nil {
-				if os.IsNotExist(err) {
-					return fmt.Errorf("Missing file: %v\n", t.filename)
-				} else {
-					return err
+				if errors.Is(err, fs.ErrNotExist) {
+					return fmt.Errorf("Missing file: %v\n", filename)
 				}
+				return err
 			}
 
 			if !bytes.Equal(old, clean) {

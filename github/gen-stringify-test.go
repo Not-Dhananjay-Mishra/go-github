@@ -17,12 +17,14 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"go/ast"
 	"go/format"
 	"go/parser"
 	"go/token"
+	"io/fs"
 	"log"
 	"os"
 	"strings"
@@ -37,7 +39,7 @@ const (
 
 var (
 	verbose = flag.Bool("v", false, "Print verbose log messages")
-	check   = flag.Bool("check", false, "check whether generated files are up to date")
+	check   = flag.Bool("check", false, "Check whether generated files are up to date")
 
 	// skipStructMethods lists "struct.method" combos to skip.
 	skipStructMethods = map[string]bool{}
@@ -362,11 +364,10 @@ func (t *templateData) dump() error {
 		logf("Checking %v...", t.filename)
 		old, err := os.ReadFile(t.filename)
 		if err != nil {
-			if os.IsNotExist(err) {
+			if errors.Is(err, fs.ErrNotExist) {
 				return fmt.Errorf("Missing file: %v\n", t.filename)
-			} else {
-				return err
 			}
+			return err
 		}
 
 		if !bytes.Equal(old, clean) {
