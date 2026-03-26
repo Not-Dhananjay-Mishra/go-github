@@ -41,8 +41,8 @@ const (
 )
 
 var (
-	verbose = flag.Bool("v", false, "Print verbose log messages")
 	check   = flag.Bool("check", false, "Check whether generated files are up to date")
+	verbose = flag.Bool("v", false, "Print verbose log messages")
 
 	sourceTmpl = template.Must(template.New("source").Parse(source))
 	testTmpl   = template.Must(template.New("test").Parse(test))

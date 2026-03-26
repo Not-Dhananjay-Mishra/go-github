@@ -38,8 +38,8 @@ const (
 )
 
 var (
-	verbose = flag.Bool("v", false, "Print verbose log messages")
 	check   = flag.Bool("check", false, "Check whether generated files are up to date")
+	verbose = flag.Bool("v", false, "Print verbose log messages")
 
 	// skipStructMethods lists "struct.method" combos to skip.
 	skipStructMethods = map[string]bool{}

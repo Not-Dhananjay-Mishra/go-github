@@ -36,8 +36,8 @@ const (
 )
 
 var (
-	verbose = flag.Bool("v", false, "Print verbose log messages")
 	check   = flag.Bool("check", false, "Check whether generated files are up to date")
+	verbose = flag.Bool("v", false, "Print verbose log messages")
 
 	sourceTmpl = template.Must(template.New("source").Funcs(template.FuncMap{
 		"hasPrefix": strings.HasPrefix,
@@ -623,8 +623,7 @@ func (t *templateData) dump() error {
 		}
 
 		logf("Writing %v...", filename)
-		err = os.WriteFile(filename, clean, 0o644)
-		return err
+		return os.WriteFile(filename, clean, 0o644)
 	}
 
 	if err := processTemplate(sourceTmpl, t.filename); err != nil {
