@@ -13,11 +13,8 @@ jobs:
       with:
         go-version: stable
         cache-dependency-path: |
-          go.sum
+          "**/go.sum"
           tools/**/go.sum
-          example/go.sum
-          scrape/go.sum
-          otel/go.sum
     - name: Check generated code
       run: ./script/generate.sh --check
     - uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9.2.0
